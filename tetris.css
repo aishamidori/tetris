@@ -1,0 +1,45 @@
+/**
+ *
+ * This CSS sheet styles my Tetris elements.
+ * 
+ *
+ *
+ * 
+ * 
+ * */
+
+.square {
+
+    border-radius: 50px/50px;
+    border-width: 10px;
+    border:solid 21px #f00; 
+    width:20px;
+    height:20px;   
+    border-color: #666666;
+    background-color: #996699;
+    float: left;
+    text-align:center;
+    display: inline-block;
+
+
+}
+
+.row {
+	overflow: hidden;
+	height: 20px;
+	width: 80px;
+}
+
+.board {
+
+}
+
+table {
+	empty-cells:show ;
+	border-width: 10px;
+	border-color: #993399;
+}
+
+body {
+	padding-top: 1in;
+}
