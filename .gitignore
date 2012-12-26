@@ -1,12 +1,5 @@
 #ignore extra packages
-bootstrap/
-bootstrap*
-d3*
-glyphicons*
-img/
-jquery.js
-require.js
+packages/
 
 #ignore testing and extra files
-*2.js
 testing/
