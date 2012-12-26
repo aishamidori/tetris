@@ -30,16 +30,33 @@
 	width: 80px;
 }
 
-.board {
-
+#next {
+    float: right;
+    clear: right;
+    margin-top: -600px;
 }
 
-table {
-	empty-cells:show ;
-	border-width: 10px;
-	border-color: #993399;
+#canvases {
+    -moz-column-count: 2;
+    -webkit-column-count: 2;
+    column-count: 2;
 }
+
 
 body {
-	padding-top: 1in;
+    padding-left: 1in;
+}
+
+section {
+    float:center;
+    padding-bottom: 0.3in;
+}
+
+h1 {
+    padding-left: 60px;
+    padding-bottom: 20px;
+}
+
+button {
+    padding-left: 1in;
 }
