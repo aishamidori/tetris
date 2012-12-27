@@ -45,6 +45,7 @@
 
 body {
     padding-left: 1in;
+    width: 240px;
 }
 
 section {
@@ -54,9 +55,14 @@ section {
 
 h1 {
     padding-left: 60px;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 button {
     padding-left: 1in;
+}
+
+p {
+    text-align: center;
+    padding-bottom: 10px;
 }

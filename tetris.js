@@ -7,10 +7,13 @@ Tetris.boardW = 10;
 Tetris.boardH = 20;
 Tetris.active = false;
 	//Makes an array to keep track of occupied squares
-Tetris.array = Array(24);
+Tetris.array = Array(22);
 Tetris.wall = 8;
 Tetris.empty = 0;
 Tetris.timer = null;
+Tetris.game = false;
+Tetris.score = 0;
+Tetris.clearedLines = 0;
 /* FUNCTION DEFINITIONS:
  *		definitions of functions for game functionality.
  */
@@ -23,25 +26,46 @@ Tetris.start = function () {
 	});
 
 	$('#start').on('click', function(e) {
-		if (Tetris.active == false) {
+		if (Tetris.game == false) {
+			Tetris.game = true;
 			Tetris.active = true;
 		}
+		Tetris.timer = window.setInterval( "Tetris.click()", 400);
 		Tetris.newGame();
-		//Tetris.timer = setTimeout("Tetris.timer()", 100);
-		console.log("game started");
+	});
+	$('#pause').on('click', function(e) {
+		if (Tetris.game != false) {
+			Tetris.pause();
+		};
+
 	});
 };
 
-Tetris.timer = function () {
-	console.log("click");
+Tetris.click = function () {
 	if (Tetris.canMove(1,0)){
-		Tetris.fall();
+		Tetris.move(1,0);
+	}
+	else {
+		Tetris.fallen();
+	};
+};
+
+Tetris.pause = function () {
+	if (Tetris.active == true) {
+		Tetris.active = false;
+		window.clearInterval(Tetris.timer);
+		$('#pause').html("<i class='icon-play icon-white'></i> Resume");
+	}
+
+	else {
+		Tetris.active = true;
+		Tetris.timer = window.setInterval( "Tetris.click()", 400);
+		$('#pause').html("<i class='icon-pause icon-white'></i>  Pause ");
 	};
 };
 
 Tetris.newGame = function () {
-	console.log("newGame called");
-	Tetris.context.clearRect(Tetris.sqSize, Tetris.sqSize, 10*Tetris.sqSize, 22*Tetris.sqSize);
+	Tetris.context.clearRect(Tetris.sqSize, Tetris.sqSize, 10*Tetris.sqSize, 20*Tetris.sqSize);
 	for (var r = 1; r < 21; r ++) {
 		for (var c = 1; c < 11; c ++) {
 			Tetris.array[r][c] = 0;
@@ -52,58 +76,84 @@ Tetris.newGame = function () {
 };
 
 Tetris.react = function (event) {
+
 	switch (event.which) {
+
 		case 37:
 			if (Tetris.canMove(0,-1)) {
 				Tetris.move(0,-1);
-				console.log('move left');
 			};
 			break;
+
 		case 38:
-			while (Tetris.canMove(1,0)) {
-				Tetris.fall();
-				console.log('move up');
+			if (Tetris.canRotate(1)) {
+				Tetris.rotate(1);
 			};
-			Tetris.fallen();
 			break;
+
 		case 39:
 			if (Tetris.canMove(0,1)) {
 				Tetris.move(0,1);
-				console.log('move right');
 			};
 			break;
+
 		case 40:
 			if (Tetris.canMove(1,0)) {
-				Tetris.fall();
-				console.log('move down');	
+				Tetris.move(1,0);
 			}
 			else {
 				Tetris.fallen();
 			}
 			break;
+
+		case 32:
+			while (Tetris.canMove(1,0)) {
+				Tetris.move(1,0);
+			};
+			Tetris.fallen();
+			break;
+
+		default:
+			console.log("Sorry! Not a valid key press.");
+
 	};
 };
 
 Tetris.move = function (row, col) {
-	console.log("moving");
 	Tetris.clearOld();
 	Tetris.loc[0] = Tetris.loc[0] + col;
 	Tetris.loc[1] = Tetris.loc[1] + row;
-	Tetris.drawPiece();
+	Tetris.repaintBoard();
 };
 
-Tetris.rotate = function () {
-	for (var row = 0; row < 4; row ++) {
-		for (var col = 0; col < 4; col ++) {
-			if (Tetris.piece[row][col] > 0) {
-				
+Tetris.rotate = function (dir) {
+
+	var rotatePiece = new Array(4);
+	for (var i = 0; i < 4; i ++ ){
+		rotatePiece[i] = new Array(4);
+	};
+
+	for (var r = 0; r < 4; r ++) {
+		for (var c = 0; c < 4; c ++) {
+			if (Tetris.piece[r][c] > 0) {
+
+				var newCoord = Tetris.rotate90((r + 0.5 - Tetris.COR[0]),(c + 0.5 - Tetris.COR[1]),dir);
+				var newR = newCoord[0] - 0.5 + Tetris.COR[0];
+				var newC = newCoord[1] - 0.5 + Tetris.COR[1];
+
+				rotatePiece[newR][newC] = Tetris.piece[r][c];
 			};
 		};
-	};	
+	};
+
+	Tetris.clearOld();
+	Tetris.piece = rotatePiece;
+	Tetris.repaintBoard();
+
 };
 
 Tetris.newPiece = function () {
-	
+
 	Tetris.piece = new Array(4);
 	Tetris.loc = [4,0];
 	Tetris.COR = [1.5,1.5];
@@ -177,7 +227,7 @@ Tetris.newPiece = function () {
 		default:
 			console.log("ERROR in switch");
 	};
-	console.log(Tetris.piece);
+
 };
 
 Tetris.drawPiece = function () {
@@ -194,12 +244,12 @@ Tetris.drawPiece = function () {
 };
 
 Tetris.drawInit = function () {
-	for (var r = 0; r<24; r++) {
+	for (var r = 0; r<22; r++) {
 
 		Tetris.array[r] = Array(12);
 
 		for (var c = 0; c<12; c++) {
-			if (r == 0 || r == 23 || c == 0 || c == 11) {
+			if (r == 0 || r == 21 || c == 0 || c == 11) {
 
 				Tetris.array[r][c] = Tetris.wall;
 
@@ -226,7 +276,6 @@ Tetris.clearOld = function () {
 };
 
 Tetris.canMove = function (row, col) {
-	console.log(Tetris.piece);
 	for (var r = 0; r < 4; r ++) {
 		for (var c = 0; c < 4; c ++) {
 			if (Tetris.piece[r][c] > 0) {
@@ -239,7 +288,38 @@ Tetris.canMove = function (row, col) {
 	return true;
 };
 
+Tetris.canRotate = function (dir) {
+	for (var r = 0; r < 4; r ++) {
+		for (var c = 0; c < 4; c ++) {
+
+			if (Tetris.piece[r][c] > 0) {
+
+				//The O (in this case 1) should never rotate
+				if (Tetris.piece[r][c] == 1) {
+					return false;
+				};
+
+				var newCoord = Tetris.rotate90((r + 0.5 - Tetris.COR[0]),(c + 0.5 - Tetris.COR[1]),dir);
+				var newR = newCoord[0] - 0.5 + Tetris.COR[0];
+				var newC = newCoord[1] - 0.5 + Tetris.COR[1];
+
+				if ((newR+Tetris.loc[1]) > 20 || (newR+Tetris.loc[1]) < 1) {
+					return false;
+				}
+				else if ((newC + Tetris.loc[0]) > 10 || (newC + Tetris.loc[0]) < 1) {
+					return false;
+				}
+				else if (Tetris.array[(newR + Tetris.loc[1])][(newC + Tetris.loc[0])] > 0){
+					return false;
+				};
+			};
+		};
+	};	
+	return true;
+};
+
 Tetris.repaintBoard = function () {
+	Tetris.context.clearRect(Tetris.sqSize, Tetris.sqSize, 10*Tetris.sqSize, 20*Tetris.sqSize);
 	for (var r = 1; r < 21; r ++) {
 		for (var c = 1; c < 11; c ++) {
 			var rgb = Tetris.getRGB(Tetris.array[r][c]);
@@ -292,15 +372,8 @@ Tetris.getRGB = function (piece) {
 	};	
 };
 
-Tetris.fall = function () {
-	console.log("old "+Tetris.loc[1]);
-	Tetris.clearOld();
-	Tetris.loc[1] ++;
-	Tetris.drawPiece();
-	console.log("new "+Tetris.loc[1]);
-};
-
 Tetris.fallen = function () {
+	console.log("Tetris.fallen()");
 	for (var r = 0; r < 4; r ++) {
 		for (var c = 0; c < 4; c ++) {
 			if (Tetris.piece[r][c] > 0) {
@@ -310,42 +383,54 @@ Tetris.fallen = function () {
 	};
 	Tetris.fullLines();
 	if (Tetris.isGameOver()){
-		Tetris.context.fillStyle = "rgb(255,255,255)"
-		Tetris.context.fillRect(40,210,160,60);
-		Tetris.context.strokeRect(40,210,160,60);
-		Tetris.context.fillStyle = "rgb(0,0,0)";
-		Tetris.context.font = "bold 28px sans-serif";
-		Tetris.context.fillText("Game Over", 44, 248);
-		console.log("gameOver");
+		Tetris.gameOver();
 	}
 	else {
 		Tetris.newPiece();
 		Tetris.repaintBoard();
-		console.log("fallen");
 	}
 };
 
+
+Tetris.gameOver = function () {
+	window.clearInterval(Tetris.timer);
+	Tetris.game = false;
+	Tetris.active = false;
+	Tetris.context.fillStyle = "rgb(255,255,255)"
+	Tetris.context.fillRect(40,210,160,60);
+	Tetris.context.strokeRect(40,210,160,60);
+	Tetris.context.fillStyle = "rgb(0,0,0)";
+	Tetris.context.font = "bold 28px sans-serif";
+	Tetris.context.fillText("Game Over", 44, 248);
+};
+
 Tetris.fullLines = function () {
+	console.log("Tetris.fullLines()");
 	var full = true;
+	var num = 0;
 	for (var r = 1; r < 21; r ++) {
 		for (var c = 1; c < 11; c ++) {
-			if (!Tetris.array[r][c] > 0) {
+			if (Tetris.array[r][c] == 0) {
+				console.log("not full because of r "+r+" c "+c);
 				full = false;
 				break;
 			};
 		};
 		if (full == true) {
 			Tetris.clearLine(r);
+			num ++;
 		};
 		full = true;
 	};
+	Tetris.repaintBoard();
 };
 
 Tetris.clearLine = function (row) {
+	console.log("Tetris.clearLine("+row+")");
 	for (var r = row; r > 1; r --) {
 		for (var c = 1; c < 11; c ++) {
 			Tetris.array[r][c] = Tetris.array[r-1][c];
-		}
+		};
 	};
 };
 
@@ -367,7 +452,19 @@ Tetris.isGameOver = function () {
 			return true;
 		};
 	};
-}
+};
+
+Tetris.rotate90 = function (r, c, dir) {
+	if (dir == 1) {
+		return [c, -r];
+	}
+	else if (dir == -1) {
+		return [-c, r];
+	}
+	else {
+		console.log("Invalid Direction for rotation!!");
+	}
+};
 
 $(document).ready(function () {
 	Tetris.start();
