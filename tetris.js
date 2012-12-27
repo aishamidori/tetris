@@ -5,9 +5,13 @@ Tetris.context = Tetris.canvas.getContext("2d");
 Tetris.sqSize = 20;
 Tetris.boardW = 10;
 Tetris.boardH = 20;
+Tetris.borderW = 1;
+Tetris.skySpace = 2;
+Tetris.totH = Tetris.boardH + 2*Tetris.borderW + Tetris.skySpace;
+Tetris.totW = Tetris.boardW + 2*Tetris.borderW;
 Tetris.active = false;
 	//Makes an array to keep track of occupied squares
-Tetris.array = Array(22);
+Tetris.array = Array(Tetris.totH);
 Tetris.wall = 8;
 Tetris.empty = 0;
 Tetris.timer = null;
@@ -65,9 +69,9 @@ Tetris.pause = function () {
 };
 
 Tetris.newGame = function () {
-	Tetris.context.clearRect(Tetris.sqSize, Tetris.sqSize, 10*Tetris.sqSize, 20*Tetris.sqSize);
-	for (var r = 1; r < 21; r ++) {
-		for (var c = 1; c < 11; c ++) {
+	Tetris.context.clearRect(Tetris.sqSize*Tetris.borderW, Tetris.sqSize*(Tetris.borderW + Tetris.skySpace), Tetris.boardW*Tetris.sqSize, Tetris.boardH*Tetris.sqSize);
+	for (var r = Tetris.skySpace; r < (Tetris.totH - Tetris.borderW); r ++) {
+		for (var c = Tetris.skySpace; c < (Tetris.totW - Tetris.borderW); c ++) {
 			Tetris.array[r][c] = 0;
 		};
 	};
@@ -155,7 +159,7 @@ Tetris.rotate = function (dir) {
 Tetris.newPiece = function () {
 
 	Tetris.piece = new Array(4);
-	Tetris.loc = [4,0];
+	Tetris.loc = [4,Tetris.skySpace];
 	Tetris.COR = [1.5,1.5];
 
 	for (var i = 0; i < 4; i ++ ){
@@ -234,6 +238,9 @@ Tetris.drawPiece = function () {
 	for (var row = 0; row < 4; row ++) {
 		for (var col = 0; col < 4; col ++) {
 			if (Tetris.piece[row][col] > 0) {
+				if (row+Tetris.loc[1] < Tetris.skySpace+Tetris.borderW) {
+					break;
+				};
 				var rgb = this.getRGB(Tetris.piece[row][col]);
 				Tetris.context.fillStyle = "rgb("+rgb[0]+","+ rgb[1]+","+ rgb[2]+")";
 				Tetris.context.fillRect((col+Tetris.loc[0])*Tetris.sqSize, (row+Tetris.loc[1])*Tetris.sqSize, Tetris.sqSize, Tetris.sqSize);
@@ -244,13 +251,14 @@ Tetris.drawPiece = function () {
 };
 
 Tetris.drawInit = function () {
-	for (var r = 0; r<22; r++) {
+	for (var r = Tetris.skySpace; r < Tetris.totH; r++) {
 
-		Tetris.array[r] = Array(12);
+		Tetris.array[r] = Array(Tetris.totH - Tetris.borderW);
 
-		for (var c = 0; c<12; c++) {
-			if (r == 0 || r == 21 || c == 0 || c == 11) {
+		for (var c = 0; c<(Tetris.totW); c++) {
 
+			if (r == Tetris.skySpace || r == (Tetris.totH - Tetris.borderW) || c == 0 || c == (Tetris.totW - Tetris.borderW)) {
+				console.log("r "+r + " c "+c +" is a wall ");
 				Tetris.array[r][c] = Tetris.wall;
 
 				Tetris.context.fillRect(c*Tetris.sqSize, r*Tetris.sqSize, Tetris.sqSize-1, Tetris.sqSize-1);
@@ -266,10 +274,13 @@ Tetris.drawInit = function () {
 };
 
 Tetris.clearOld = function () {
-		for (var row = 0; row < 4; row ++) {
-			for (var col = 0; col < 4; col ++) {
-				if (Tetris.piece[row][col] > 0) {
-					Tetris.context.clearRect((col+Tetris.loc[0])*Tetris.sqSize-1, (row+Tetris.loc[1])*Tetris.sqSize-1, Tetris.sqSize+2, Tetris.sqSize+2);
+	for (var row = 0; row < 4; row ++) {
+		for (var col = 0; col < 4; col ++) {
+			if (Tetris.piece[row][col] > 0) {
+				if (row + Tetris.loc[1] < Tetris.skySpace+Tetris.borderW) {
+					break;
+				}
+				Tetris.context.clearRect((col+Tetris.loc[0])*Tetris.sqSize-1, (row+Tetris.loc[1])*Tetris.sqSize-1, Tetris.sqSize+2, Tetris.sqSize+2);
 			};
 		};
 	};
@@ -303,10 +314,10 @@ Tetris.canRotate = function (dir) {
 				var newR = newCoord[0] - 0.5 + Tetris.COR[0];
 				var newC = newCoord[1] - 0.5 + Tetris.COR[1];
 
-				if ((newR+Tetris.loc[1]) > 20 || (newR+Tetris.loc[1]) < 1) {
+				if ((newR+Tetris.loc[1]) < 1) {
 					return false;
 				}
-				else if ((newC + Tetris.loc[0]) > 10 || (newC + Tetris.loc[0]) < 1) {
+				else if ((newC + Tetris.loc[0]) > Tetris.boardW || (newC + Tetris.loc[0]) < Tetris.borderW) {
 					return false;
 				}
 				else if (Tetris.array[(newR + Tetris.loc[1])][(newC + Tetris.loc[0])] > 0){
@@ -319,9 +330,10 @@ Tetris.canRotate = function (dir) {
 };
 
 Tetris.repaintBoard = function () {
-	Tetris.context.clearRect(Tetris.sqSize, Tetris.sqSize, 10*Tetris.sqSize, 20*Tetris.sqSize);
-	for (var r = 1; r < 21; r ++) {
-		for (var c = 1; c < 11; c ++) {
+	Tetris.context.clearRect((Tetris.borderW*Tetris.sqSize), (Tetris.borderW + Tetris.skySpace)*Tetris.sqSize, Tetris.boardW*Tetris.sqSize, Tetris.boardH*Tetris.sqSize);
+	for (var r = (Tetris.skySpace + Tetris.borderW); r < (Tetris.totH - Tetris.borderW); r ++) {
+		for (var c = 1; c < (Tetris.totW - Tetris.borderW); c ++) {
+			console.log("painting r "+r + " c "+c);
 			var rgb = Tetris.getRGB(Tetris.array[r][c]);
 			if (rgb != undefined){
 				Tetris.context.fillStyle = "rgb("+rgb[0]+","+ rgb[1]+","+ rgb[2]+")";
@@ -367,7 +379,6 @@ Tetris.getRGB = function (piece) {
 			return [255,102,0];
 
 		default:
-			//
 			return undefined;
 	};	
 };
@@ -408,8 +419,8 @@ Tetris.fullLines = function () {
 	console.log("Tetris.fullLines()");
 	var full = true;
 	var num = 0;
-	for (var r = 1; r < 21; r ++) {
-		for (var c = 1; c < 11; c ++) {
+	for (var r = (Tetris.skySpace + Tetris.borderW); r < (Tetris.totH - Tetris.borderW); r ++) {
+		for (var c = Tetris.borderW; c < Tetris.totW - Tetris.borderW; c ++) {
 			if (Tetris.array[r][c] == 0) {
 				console.log("not full because of r "+r+" c "+c);
 				full = false;
@@ -427,8 +438,8 @@ Tetris.fullLines = function () {
 
 Tetris.clearLine = function (row) {
 	console.log("Tetris.clearLine("+row+")");
-	for (var r = row; r > 1; r --) {
-		for (var c = 1; c < 11; c ++) {
+	for (var r = row; r > (Tetris.skySpace + Tetris.borderW); r --) {
+		for (var c = Tetris.borderW; c < Tetris.totW - Tetris.borderW; c ++) {
 			Tetris.array[r][c] = Tetris.array[r-1][c];
 		};
 	};
@@ -447,20 +458,26 @@ Tetris.nextPieceBox = function () {
 };
 
 Tetris.isGameOver = function () {
-	for (var c = 1; c < 11; c ++) {
-		if (Tetris.array[1][c] > 0) {
+	for (var c = Tetris.borderW; c < (Tetris.totW - Tetris.borderW); c ++) {
+		if (Tetris.array[(Tetris.borderW + Tetris.skySpace)][c] > 0) {
 			return true;
 		};
 	};
 };
 
 Tetris.rotate90 = function (r, c, dir) {
+
+	//dir == 1 represents clockwise rotation
 	if (dir == 1) {
 		return [c, -r];
 	}
+
+	//dir == -1 represents counter-clockwise rotation
 	else if (dir == -1) {
 		return [-c, r];
 	}
+
+	//should never have input other than +1, -1
 	else {
 		console.log("Invalid Direction for rotation!!");
 	}
