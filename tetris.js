@@ -59,7 +59,7 @@ Tetris.clearedLines = 0;
 Tetris.toNext = 10;
 
 //Level = (Tetris.clearedLines/10) + 1
-Tetris.level = 8;
+Tetris.level = 1;
 
 //Game state variables
 Tetris.paused = false;
@@ -138,9 +138,8 @@ Tetris.react = function (event) {
 
 	//Game functionality key presses only registered if the game is not paused
 	if (Tetris.paused == false) {
-
+		event.preventDefault();
 		switch (event.which) {
-
 			//Move Left - Left arrow
 			case 37:
 
@@ -572,7 +571,7 @@ Tetris.fullLines = function () {
 	Tetris.clearedLines += num;
 	Tetris.toNext -= num;
 	if (Tetris.toNext <= 0) {
-		Tetris.nextLevel();
+		Tetris.newLevel();
 		Tetris.toNext += 10; 
 	}
 	Tetris.updateScoring();
