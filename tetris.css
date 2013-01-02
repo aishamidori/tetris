@@ -31,7 +31,6 @@
 }
 
 #next {
-    float: right;
     clear: right;
     margin-top: -600px;
 }
@@ -42,10 +41,9 @@
     column-count: 2;
 }
 
-
-body {
-    padding-left: 1in;
+.tetris {
     width: 240px;
+    padding-left: 1in;
 }
 
 section {

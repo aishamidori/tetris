@@ -1,15 +1,14 @@
+<!DOCTYPE html>
 <html>
-
 	<head>
 		<link href="packages/bootstrap/css/bootstrap.css" rel="stylesheet">
     	<link href="tetris.css" rel="stylesheet">
 
 	</head>
 
-	<body id="target">
+	<body id="target" class="tetris">
 		<h1> Tetris! </h1>
-		<p>	Score: 0  </p>
-		<p> Lines Cleared: 0 </p>  
+		<p id="scoring">	Level: 1 <br/>	Score: 0 <br/> Lines Cleared: 0 </p>  
 		<section id="canvases">
 			<canvas id="board" width="240" height="480"></canvas>
 			<canvas id="next" width="200" height="120"></canvas>
@@ -19,7 +18,7 @@
 				<i class="icon-play-circle icon-white"></i> New Game </button>
 			<button id = "pause" class="btn btn-default btn-inverse" type="button"> 
 				<i class="icon-pause icon-white"></i>  Pause  </button>
-		</setion>
+		</section>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 		<script src="packages/bootstrap/js/bootstrap.js"></script>
 		<script src="tetris.js"></script>
