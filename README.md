@@ -19,10 +19,10 @@ Actions can be performed by pressing keyboard keys.
 Credits
 ============================================
 
-Rules and Guidlines based on Official Tetris Guidlines.
-Layout using HTML5 canvas
-Buttons with Bootstrap
-Icons thanks to Glyphicons
+Rules and Guidlines based on Official Tetris Guidlines.  
+Layout using HTML5 canvas.  
+Buttons with Bootstrap.  
+Icons thanks to Glyphicons.  
 
 
 Scoring
