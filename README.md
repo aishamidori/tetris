@@ -1,9 +1,9 @@
 Overview
 ============================================
 
-A Tetris implementation using Javascript.
-
-To run open the file 'tetris.html' in any web browser.
+A Tetris implementation using Javascript.  
+To run open the file 'tetris.html' in any web browser.  
+Sample can also be played [here](http://aishaferrazares.weebly.com/)
 
 Actions can be performed by pressing keyboard keys.
 
