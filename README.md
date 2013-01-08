@@ -2,8 +2,10 @@ Overview
 ============================================
 
 A Tetris implementation using Javascript.  
-To run open the file 'tetris.html' in any web browser.  
-Sample can also be played [here](http://aishaferrazares.weebly.com/)
+To run open the file 'tetris.html' in any web browser.
+Within the same folder containing the file 'tetris.html' you must also have the bootstrap folder as downloaded [here](http://twitter.github.com/bootstrap/).
+JQuery is automatically accessed from Google APIs.  
+Sample can also be played [here](http://aishaferrazares.weebly.com/).
 
 Actions can be performed by pressing keyboard keys.
 
